@@ -1,0 +1,3 @@
+[submodule "rtl/fp1100"]
+	path = rtl/fp1100
+	url = https://github.com/shaeon/fp1100

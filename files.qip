@@ -1,0 +1,38 @@
+# Casio FP-1100 para MiSTer
+#
+# rtl/fp1100: el core de MiST/SiDi/Poseidon/Calypso (submodulo shaeon/fp1100,
+# sin cambios). De el se usan rtl/ y common/T80; su common/mist-modules no,
+# porque aqui el marco es sys/ (hps_io, video_mixer...).
+
+set_global_assignment -name QIP_FILE           rtl/fp1100/common/T80/T80.qip
+
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_main.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_sub.v
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/fp1100/rtl/fp1100_upd7801.sv
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_video.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_display.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_vga.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_vfetch.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_kbd.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_ps2.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_dpram.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_sdram.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_fdc.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_cmt.v
+set_global_assignment -name VERILOG_FILE       rtl/fp1100/rtl/fp1100_tape.v
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/fp1100/rtl/u765/u765.sv
+
+# uPD7800 (David Hunter, SuperCassetteVision_MiSTer): upd7800.sv incluye los .svh
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/fp1100/rtl/upd7800/upd7800.sv
+set_global_assignment -name SEARCH_PATH        rtl/fp1100/rtl/upd7800
+
+# Opciones del core (las mismas que en la SiDi, la Calypso y la Poseidon):
+#   VRAM_SDRAM  la VRAM de 48K va en la SDRAM, leida linea a linea
+# El momento de recoger el dato de la SDRAM (SDRAM_ANTES en las otras placas)
+# aqui es una opcion del OSD: ver FP1100.sv.
+set_global_assignment -name VERILOG_MACRO      "VRAM_SDRAM=1"
+
+set_global_assignment -name QIP_FILE           rtl/pll.qip
+set_global_assignment -name SDC_FILE           FP1100.sdc
+set_global_assignment -name SYSTEMVERILOG_FILE FP1100.sv
