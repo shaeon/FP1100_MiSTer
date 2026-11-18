@@ -16,6 +16,7 @@ Para retomar con "sigue".
   Early por defecto = como las otras placas).
 - Compilado con Quartus 17.0 Lite en el contenedor (ver abajo el resultado).
 - README en inglés y español.
+- `sd/games/FP1100/boot.rom`: la ROM (FP1100.ROM de 48K, comprobada con los SHA1 de MAME).
 
 ## Pendiente (probar en la placa)
 

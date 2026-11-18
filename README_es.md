@@ -13,11 +13,11 @@ Autor: Shaeon (Carlos Palmero).
 ## Instalación
 
 - Copia el `.rbf` a `/media/fat/_Computer/`.
-- Copia la ROM a `/media/fat/games/FP1100/boot.rom`. Es el mismo fichero
-  `FP1100.ROM` de 48K que usan las otras placas, solo cambia el nombre (ver
+- Copia el contenido de la carpeta `sd/` a la raíz de la SD (`/media/fat/`):
+  deja la ROM en `games/FP1100/boot.rom`, que se carga sola al arrancar el
+  core. Es el mismo `FP1100.ROM` de 48K que usan las otras placas con otro
+  nombre (ver
   [rtl/fp1100/roms/README.md](https://github.com/shaeon/fp1100/blob/main/roms/README.md)).
-  Se carga sola al arrancar el core. **Las ROMs no van incluidas**: son de
-  Casio.
 - Los discos (`.dsk`, EDSK) y las cintas (`.wav`) pueden ir en la misma
   carpeta. En `rtl/fp1100/tools/` hay conversores de D88, Teledisk, ImageDisk
   y volcados en crudo a EDSK, y de CAS/TZX/TAP a WAV.
