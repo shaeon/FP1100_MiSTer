@@ -4,6 +4,8 @@
 # Release con el .rbf.
 #
 # - push / pull request: compila y sube el resultado (pestana Actions).
+# - push a main: ademas deja el .rbf en releases/FP1100_AAAAMMDD.rbf con un commit
+#   (los cambios solo en releases/ no relanzan la compilacion).
 # - Lanzar a mano: Actions > Build > Run workflow.
 # - Release: git tag v1.0 && git push origin v1.0
 
@@ -103,6 +105,31 @@ jobs:
           name: FP1100-${{ github.sha }}
           path: dist/
           retention-days: 30
+
+      # En cada push a main el .rbf nuevo va a releases/ (como en los cores de MiSTer-devel).
+      # El commit va a nombre del autor del repo; los push hechos con GITHUB_TOKEN no lanzan
+      # otra vez el workflow, y ademas releases/ esta en paths-ignore.
+      - name: Guardar el .rbf en releases/
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          RBF=$(ls dist/FP1100_*.rbf 2>/dev/null | head -1)
+          [ -n "$RBF" ] || { echo "No hay .rbf"; exit 1; }
+          sudo chown -R "$(id -u):$(id -g)" "$GITHUB_WORKSPACE"
+          git config user.name  "Shaeon (Carlos Palmero)"
+          git config user.email "shaeon@users.noreply.github.com"
+          mkdir -p releases
+          cp "$RBF" releases/
+          git add releases/
+          if git diff --cached --quiet; then
+            echo "El .rbf no ha cambiado"
+            exit 0
+          fi
+          git commit -m "releases: $(basename "$RBF")"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1
 
       - name: Crear la Release (etiquetas v*)
         if: startsWith(github.ref, 'refs/tags/v')
