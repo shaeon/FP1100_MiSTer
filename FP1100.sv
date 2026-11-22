@@ -290,8 +290,19 @@ module emu
 	always @(posedge clk_sys) osd_s <= {osd_s[1:0], OSD_STATUS};
 	wire kbd_soltar = osd_s[2] ^ osd_s[1];
 
+	// Mascara de bytes tambien en A12:A11. En algunos modulos SDRAM de MiSTer las patas DQML/DQMH
+	// van unidas a A11/A12, asi que la mascara de una escritura tiene que ir en esas dos lineas
+	// de direccion en el ciclo del WRITE (en la columna no se usan: el controlador las deja a 0).
+	// Sin esto cada escritura de un byte pisaba los dos de la palabra: el Z80 leia en cada
+	// direccion par el byte de la impar (01 01 FF FF en vez de AF 01 80 FF) y no arrancaba.
+	// En el READ el controlador pone DQM = 00, asi que A12:A11 siguen a 0. Las patas DQML/DQMH
+	// se siguen moviendo igual, para los modulos que si las tienen.
 	wire [12:0] sdram_a;
-	assign SDRAM_A = sdram_a;
+	wire        sdram_dqml, sdram_dqmh;
+	wire        sdram_col = SDRAM_nRAS & ~SDRAM_nCAS;           // READ o WRITE
+	assign SDRAM_A    = sdram_col ? {sdram_dqmh, sdram_dqml, sdram_a[10:0]} : sdram_a;
+	assign SDRAM_DQML = sdram_dqml;
+	assign SDRAM_DQMH = sdram_dqmh;
 
 	fp1100 #(.CLK_HZ(CLK_HZ)) fp1100
 	(
@@ -324,8 +335,8 @@ module emu
 		.rom_wr_addr    (ioctl_addr[11:0]),
 		.SDRAM_A        (sdram_a        ),
 		.SDRAM_DQ       (SDRAM_DQ       ),
-		.SDRAM_DQML     (SDRAM_DQML     ),
-		.SDRAM_DQMH     (SDRAM_DQMH     ),
+		.SDRAM_DQML     (sdram_dqml     ),
+		.SDRAM_DQMH     (sdram_dqmh     ),
 		.SDRAM_nWE      (SDRAM_nWE      ),
 		.SDRAM_nCAS     (SDRAM_nCAS     ),
 		.SDRAM_nRAS     (SDRAM_nRAS     ),

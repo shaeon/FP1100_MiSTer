@@ -18,6 +18,16 @@ Para retomar con "sigue".
 - README en inglés y español.
 - `sd/games/FP1100/boot.rom`: la ROM (FP1100.ROM de 48K, comprobada con los SHA1 de MAME).
 
+## Arreglado (22/11/2026): pantalla en negro
+
+- Síntoma: OSD y vsync, pero imagen negra; el Z80 no arrancaba.
+- Diagnóstico (RBF con la ROM del Z80 copiada en block RAM y comparando cada lectura): el Z80
+  leía 01 01 FF FF en vez de AF 01 80 FF, el byte impar en cada dirección par, con Early y con
+  Normal. Las escrituras de un byte pisaban los dos bytes de la palabra.
+- Causa: en algunos módulos SDRAM de MiSTer DQML/DQMH van unidas a A11/A12; la máscara tiene
+  que ir en A12:A11 en el WRITE. Arreglado en FP1100.sv (el submódulo no cambia). Reproducido y
+  comprobado en simulación con un modelo de SDRAM así.
+
 ## Pendiente (probar en la placa)
 
 - Que arranque el BASIC con "SDRAM read = Early"; si no, probar "Normal" y dejar el que
