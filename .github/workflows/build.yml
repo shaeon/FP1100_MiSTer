@@ -125,8 +125,10 @@ jobs:
             exit 0
           fi
           git commit -m "releases: $(basename "$RBF")"
+          # Quartus reescribe ficheros del repo (el .qsf, por ejemplo): --autostash los aparta
+          # durante el rebase para que no lo bloqueen
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
             sleep 5
           done
           exit 1
